@@ -4,7 +4,7 @@ from datetime import datetime
 from functools import partial
 from sqlite3 import connect
 
-from pytz import timezone
+from pytz import timezone, utc
 from apiclient.discovery import build
 from httplib2 import Http
 from oauth2client import file as oauth_file, client, tools
@@ -55,14 +55,15 @@ def rfc5545(days, endDate):
     }
     days = ','.join(rfc_days[day] for day in days)
     # https://github.com/dateutil/dateutil/blob/master/dateutil/rrule.py#L722
-    until = endDate.strftime('%Y%m%dT%H%M%S')
+    until = endDate.strftime('%Y%m%dT%H%M%SZ')
     return "RRULE:FREQ=WEEKLY;BYDAY=%s;UNTIL=%s" % (days, until)
 
 
 def parse_time(date, time):
     date_format = '%Y-%m-%d %H:%M'
     eastern = timezone('America/New_York')
-    return datetime.strptime(date + ' ' + time, date_format).replace(tzinfo=eastern)
+    dt = datetime.strptime(date + ' ' + time, date_format)
+    return eastern.localize(dt).astimezone(utc)
 
 def format_events(sections):
     events = []
