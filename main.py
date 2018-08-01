@@ -109,7 +109,7 @@ def main(courses, auth=True, dry_run=False, debug=False):
 if __name__ == '__main__':
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument('courses', nargs='+', type=int)
+    parser.add_argument('courses', nargs='+', type=int, help='CRN codes; available from https://my.sc.edu')
     parser.add_argument('--no-auth', action='store_false', dest='auth',
                         default=True, help="don't authenticate with google; just create the request objects. no auth implies dry run")
     parser.add_argument('--dry-run', action='store_true',

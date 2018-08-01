@@ -15,7 +15,7 @@ for info on how to set up the calendar API.
 usage: main.py [-h] [--no-auth] [--dry-run] [--debug] courses [courses ...]
 
 positional arguments:
-  courses
+  courses     CRN codes; available from https://my.sc.edu
 
 optional arguments:
   -h, --help  show this help message and exit
