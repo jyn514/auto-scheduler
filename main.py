@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 from datetime import datetime
-from functools import partial
 from sqlite3 import connect
 
 from pytz import timezone, utc
