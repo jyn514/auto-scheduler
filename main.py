@@ -111,7 +111,7 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('courses', nargs='+', type=int)
     parser.add_argument('--no-auth', action='store_false', dest='auth',
-                        default=True, help="don't authenticate with google; just create the requests; no auth implies dry run")
+                        default=True, help="don't authenticate with google; just create the request objects. no auth implies dry run")
     parser.add_argument('--dry-run', action='store_true',
                         help="don't create the events, just show what would happen")
     parser.add_argument('--debug', action='store_true', help='be verbose')
