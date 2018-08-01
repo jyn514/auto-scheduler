@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from logging import basicConfig, getLogger, StreamHandler, DEBUG, WARNING
 from datetime import datetime
 from sqlite3 import connect
 
@@ -7,6 +8,8 @@ from pytz import timezone, utc
 from apiclient.discovery import build
 from httplib2 import Http
 from oauth2client import file as oauth_file, client, tools
+
+logger = getLogger(__name__)
 
 def run_auth():
     # Setup the Calendar API
@@ -36,7 +39,7 @@ def query_sections(ids):
         -- bad data
         AND class.department NOT IN ('ELCT', 'EDCE')
     """ % ', '.join('?' * len(ids))
-    print(sql.replace('?', '%d') % tuple(ids))
+    logger.debug(sql.replace('?', '%d') % tuple(ids))
     with connect('classes.sql') as connection:
         return dictfetchall(connection.cursor().execute(sql, ids))
 
@@ -88,19 +91,19 @@ def format_events(sections):
     return events
 
 
-def main(courses, auth=True, dry_run=False):
+def main(courses, auth=True, dry_run=False, debug=False):
     if not auth:
         dry_run = True
     else:
         insert = run_auth().events().insert
-        print('authentication succeeded')
+        logger.info('authentication succeeded')
     sections = query_sections(courses)
     events = format_events(sections)
     for event in events:
-        print(event)
+        logger.debug(event)
         if not dry_run:
             event = insert(calendarId='primary', body=event).execute()
-            print('Event created:', event.get('htmlLink'))
+            logger.info('Event created:', event.get('htmlLink'))
 
 
 if __name__ == '__main__':
@@ -112,5 +115,10 @@ if __name__ == '__main__':
                         default=True, help="don't authenticate with google; just create the requests; no auth implies dry run")
     parser.add_argument('--dry-run', action='store_true',
                         help="don't create the events, just show what would happen")
+    parser.add_argument('--debug', action='store_true', help='be verbose')
     args = parser.parse_args()
+    logger.setLevel(DEBUG if args.__dict__.pop('debug') else WARNING)
+    console = StreamHandler()
+    console.setLevel(DEBUG)
+    logger.addHandler(console)
     main(**args.__dict__)
